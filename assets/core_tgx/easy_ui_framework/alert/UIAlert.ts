@@ -27,7 +27,7 @@ export class UIAlert extends UIController {
     public static show(content: string, showCancel?: boolean): UIAlertOptions {
         let opts = new UIAlertOptions() as any;
         opts._content = content;
-        opts._showCancel = showCancel;
+        // opts._showCancel = showCancel;
         UIMgr.inst.showUI(UIAlert, (alert: UIAlert) => {
             alert.init(opts);
         }) as UIAlert;
@@ -43,7 +43,7 @@ export class UIAlert extends UIController {
         }
 
         layout.content.string = options._content || '';
-        layout.btnCancel.node.active = options._showCancel;
+        // layout.btnCancel.node.active = options._showCancel;
         if (!options._showCancel) {
             let pos = layout.btnOK.node.position;
             layout.btnOK.node.setPosition(0, pos.y, pos.z);
@@ -60,12 +60,12 @@ export class UIAlert extends UIController {
             }
         });
 
-        this.onButtonEvent(layout.btnCancel, () => {
-            this.hide();
-            let options = this._options as any as { _cbClick: Function, _cbClickThisArg: any };
-            if (options._cbClick) {
-                options._cbClick.call(options._cbClickThisArg, false);
-            }
-        });
+        // this.onButtonEvent(layout.btnCancel, () => {
+        //     this.hide();
+        //     let options = this._options as any as { _cbClick: Function, _cbClickThisArg: any };
+        //     if (options._cbClick) {
+        //         options._cbClick.call(options._cbClickThisArg, false);
+        //     }
+        // });
     }
 }

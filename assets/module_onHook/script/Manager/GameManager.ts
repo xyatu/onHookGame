@@ -1,0 +1,186 @@
+import { _decorator, Button, Component, director, instantiate, Label, log, Node, NodeEventType, Prefab, ProgressBar } from 'cc';
+import { Equipment, Quality, Region, regionToEngString, TestregionToString } from '../Structure/Equipment';
+import { BackpackManager } from './BackpackManager';
+import { EventManager } from './EventManager';
+import { EquipmentState } from '../Equipment/EquipmentState';
+import { EquipState, OptionsComp } from '../Component/OptionsComp';
+import { PropertyManager } from './PropertyManager';
+import { RoleManager } from './RoleManager';
+import { tgxUIAlert } from '../../../core_tgx/tgx';
+import { GameConfig } from '../data/GameConfig';
+import { WECHAT } from 'cc/env';
+import { SelectAlert } from '../Component/SelectAlert';
+import { StrengthenComp } from '../Component/StrengthenComp';
+import { getstrengthen_dataById } from '../data/strengthen_data';
+import { MoveTipComp } from '../Component/MoveTipComp';
+const { ccclass, property } = _decorator;
+
+
+@ccclass('GameManager')
+export class GameManager extends Component {
+    public static inst: GameManager = null;
+    @property(Node)
+    private createAlert: Node = null;
+    @property(Node)
+    private selectAlert: Node = null;
+    @property(SelectAlert)
+    selectAlertComp: SelectAlert = null;
+    @property(StrengthenComp)
+    private strengthenAlert: StrengthenComp = null;
+    @property(Node)
+    private strengthenTip: Node = null;
+    @property(Prefab)
+    private tipPrefab: Prefab = null;
+
+    @property(Node)
+    private canvas: Node = null;
+    @property(Node)
+    private mask: Node = null;
+    @property(Node)
+    private playerDeathMask = null;
+
+    @property(Node)
+    rank: Node = null;
+
+    resetTick: number = 0;
+
+    selectedEquipment: Node = null;
+
+    protected onLoad(): void {
+        GameManager.inst = this;
+    }
+
+    protected start(): void {
+        let eventManager: EventManager = EventManager.inst;
+
+        this.mask.active = true;
+
+        if (eventManager) {
+            eventManager.cbFllowEquipmentSelect.register(this.onES_showUI);
+            eventManager.cbOnEquipmentStrengthen.register(this.onEST_showUI);
+
+            eventManager.cbOnEquipmentUnSelect.register(this.onEUS_hideOptions);
+        }
+        this.canvas.on(NodeEventType.TOUCH_END, this.onEquipmentUnSelect);
+
+        // this.schedule(this.spawnEquipment, 1);
+    }
+
+    protected update(dt: number): void {
+        this.resetTick += dt;
+        if (this.resetTick >= GameConfig.resetDataTime) {
+            this.resetTick = 0;
+            // if (WECHAT) {
+            //     wx.postMessage({
+            //         type: 'resetData',
+            //         data: {
+            //             x: 0,
+            //             y: 0,
+            //             width: 750,
+            //             height: 1334,
+            //         }
+            //     });
+            // }
+        }
+    }
+
+    public gameStart() {
+        BackpackManager.inst.gameStart();
+        PropertyManager.inst.gameStart();
+        RoleManager.inst.gameStart();
+        this.mask.active = false;
+    }
+
+    public spawnEquipment(): Equipment {
+        let euqipment = new Equipment();
+        // BackpackManager.inst.pickupEquipment(euqipment);
+        return euqipment;
+    }
+
+    private onEquipmentUnSelect() {
+        BackpackManager.inst.onEquipmentUnSelect();
+    }
+
+    public onBackpackScroll() {
+        // BackpackManager.inst.onEquipmentUnSelect();
+    }
+
+    public death(isPlayer: boolean) {
+        if (isPlayer) {
+            this.playerDeath();
+        }
+        else {
+            this.enemyDeath();
+        }
+    }
+
+    private playerDeath() {
+        this.playerDeathMask.active = true;
+    }
+
+    private enemyDeath() {
+        this.showEnemyDeathUI();
+    }
+
+    private showEnemyDeathUI() {
+        tgxUIAlert.show(`你击败了敌人，你获得了${1000}金币`, false).onClick(isOK => {
+            if (isOK) {
+                BackpackManager.inst.onChangeGold(1000);
+                RoleManager.inst.fightNext();
+            }
+        })
+    }
+
+    public reFight() {
+        RoleManager.inst.reFight();
+    }
+
+    public showTip(content: string) {
+        let tip: Node = instantiate(this.tipPrefab);
+        tip.getComponent(MoveTipComp).setContent(content).node.active = true;
+        this.strengthenTip.addChild(tip);
+    }
+
+    //In UI==================================================
+    private onES_showUI(e: Equipment, isLock: boolean, isEquip: boolean, oldE: Equipment) {
+        let gm: GameManager = GameManager.inst;
+        let selectAlert: Node = gm.selectAlert;
+        selectAlert.active = true;
+
+        gm.selectAlertComp.setStyle(e, isLock, isEquip, oldE)
+
+    }
+
+    private onEST_showUI(es: EquipmentState, e: Equipment) {
+        let gm: GameManager = GameManager.inst;
+        gm.strengthenAlert.node.active = true;
+        gm.strengthenAlert.setStyle(es, e);
+    }
+
+    private onEUS_hideOptions() {
+        let equipmentOptions: Node = GameManager.inst.selectAlert;
+        equipmentOptions.active = false;
+    }
+
+    private saleAll() {
+        BackpackManager.inst.onSale(true);
+    }
+
+    private showPlayerProperty() {
+        PropertyManager.inst.showPlayerProperty();
+    }
+
+    private showCreateAlert() {
+        this.createAlert.active = true;
+    }
+
+    private showRank() {
+        this.rank.active = true;
+    }
+
+    private hideRank() {
+        this.rank.active = false;
+    }
+}
+
+
