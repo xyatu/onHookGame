@@ -1,7 +1,9 @@
-import { _decorator, Component, EventTouch, Label, log, Node, NodeEventType, RichText, Sprite, SpriteFrame } from 'cc';
+import { _decorator, Component, EventTouch, Label, log, Node, NodeEventType, RichText, Sprite, SpriteAtlas, SpriteFrame } from 'cc';
 import { Quality, Region, TestregionToString as testRegionToString } from '../Structure/Equipment';
 import { BackpackManager } from '../Manager/BackpackManager';
 import { setColor, setOutline } from '../Util/GameUtil';
+import { getequipment_dataById } from '../data/equipment_data';
+import { DataGetter } from '../Util/DataGetter';
 const { ccclass, property } = _decorator;
 
 @ccclass('EquipmentState')
@@ -16,8 +18,8 @@ export class EquipmentState extends Component {
     @property(Sprite)
     bg: Sprite = null;
 
-    @property(Node)
-    private selectFrame: Node = null;
+    @property(Sprite)
+    private icon: Sprite = null;
 
     @property(SpriteFrame)
     qualitySprite: SpriteFrame[] = [];
@@ -53,11 +55,17 @@ export class EquipmentState extends Component {
         this.bg.spriteFrame = this.qualitySprite[quality];
     }
 
-    setStyle(region: Region, quality: Quality, isEquip: boolean, isLock: boolean) {
+    setStyle(region: Region, quality: Quality, id: number, isEquip: boolean, isLock: boolean) {
         this.region.string = testRegionToString(region);
         this.resetQuality(quality);
         this.isLock.active = isLock;
         this.isEquip.active = isEquip;
+
+        const data = getequipment_dataById(id);
+
+        let plist: SpriteAtlas = DataGetter.inst.getRes(SpriteAtlas, data['plist']);
+
+        this.icon.spriteFrame = plist.getSpriteFrame(data["img"]);
     }
 
     selectEquipment() {

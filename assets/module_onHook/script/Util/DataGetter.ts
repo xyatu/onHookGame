@@ -75,6 +75,8 @@ export class DataGetter extends Component {
     complete(index: number) {
         loadFinish[index] = true;
         if (loadFinish.filter(item => !item).length <= 0) {
+
+            log(this.res.spriteAtlas)
             GameManager.inst.gameStart();
         }
     }

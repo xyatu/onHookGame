@@ -16050,25 +16050,25 @@
         "__id__": 625
       },
       {
-        "__id__": 627
-      },
-      {
-        "__id__": 629
+        "__id__": 628
       },
       {
         "__id__": 631
       },
       {
-        "__id__": 633
+        "__id__": 634
       },
       {
-        "__id__": 635
+        "__id__": 636
       },
       {
         "__id__": 638
       },
       {
-        "__id__": 641
+        "__id__": 640
+      },
+      {
+        "__id__": 642
       }
     ],
     "nestedPrefabInstanceRoots": [
@@ -16118,6 +16118,96 @@
   {
     "__type__": "cc.TargetOverrideInfo",
     "source": {
+      "__id__": 14
+    },
+    "sourceInfo": {
+      "__id__": 626
+    },
+    "propertyPath": [
+      "weapon"
+    ],
+    "target": {
+      "__id__": 14
+    },
+    "targetInfo": {
+      "__id__": 627
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "5104514wBD7q5TA7WPcHyg"
+    ]
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "79zE6AGiRLXaoqCUhaQ+W/"
+    ]
+  },
+  {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 14
+    },
+    "sourceInfo": {
+      "__id__": 629
+    },
+    "propertyPath": [
+      "hand"
+    ],
+    "target": {
+      "__id__": 14
+    },
+    "targetInfo": {
+      "__id__": 630
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "5104514wBD7q5TA7WPcHyg"
+    ]
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "1cChrSa9ZIBKRk6jOCOs8v"
+    ]
+  },
+  {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 14
+    },
+    "sourceInfo": {
+      "__id__": 632
+    },
+    "propertyPath": [
+      "animPlayer"
+    ],
+    "target": {
+      "__id__": 14
+    },
+    "targetInfo": {
+      "__id__": 633
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "5104514wBD7q5TA7WPcHyg"
+    ]
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "90lz+imUlMkqt3R2gSomnZ"
+    ]
+  },
+  {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
       "__id__": 210
     },
     "sourceInfo": null,
@@ -16128,7 +16218,7 @@
       "__id__": 233
     },
     "targetInfo": {
-      "__id__": 626
+      "__id__": 635
     }
   },
   {
@@ -16150,7 +16240,7 @@
       "__id__": 604
     },
     "targetInfo": {
-      "__id__": 628
+      "__id__": 637
     }
   },
   {
@@ -16172,7 +16262,7 @@
       "__id__": 475
     },
     "targetInfo": {
-      "__id__": 630
+      "__id__": 639
     }
   },
   {
@@ -16194,7 +16284,7 @@
       "__id__": 14
     },
     "targetInfo": {
-      "__id__": 632
+      "__id__": 641
     }
   },
   {
@@ -16216,103 +16306,13 @@
       "__id__": 41
     },
     "targetInfo": {
-      "__id__": 634
-    }
-  },
-  {
-    "__type__": "cc.TargetInfo",
-    "localID": [
-      "04xf7FNHFAL7Qe0h2LkZ1L"
-    ]
-  },
-  {
-    "__type__": "cc.TargetOverrideInfo",
-    "source": {
-      "__id__": 14
-    },
-    "sourceInfo": {
-      "__id__": 636
-    },
-    "propertyPath": [
-      "weapon"
-    ],
-    "target": {
-      "__id__": 14
-    },
-    "targetInfo": {
-      "__id__": 637
-    }
-  },
-  {
-    "__type__": "cc.TargetInfo",
-    "localID": [
-      "5104514wBD7q5TA7WPcHyg"
-    ]
-  },
-  {
-    "__type__": "cc.TargetInfo",
-    "localID": [
-      "79zE6AGiRLXaoqCUhaQ+W/"
-    ]
-  },
-  {
-    "__type__": "cc.TargetOverrideInfo",
-    "source": {
-      "__id__": 14
-    },
-    "sourceInfo": {
-      "__id__": 639
-    },
-    "propertyPath": [
-      "hand"
-    ],
-    "target": {
-      "__id__": 14
-    },
-    "targetInfo": {
-      "__id__": 640
-    }
-  },
-  {
-    "__type__": "cc.TargetInfo",
-    "localID": [
-      "5104514wBD7q5TA7WPcHyg"
-    ]
-  },
-  {
-    "__type__": "cc.TargetInfo",
-    "localID": [
-      "1cChrSa9ZIBKRk6jOCOs8v"
-    ]
-  },
-  {
-    "__type__": "cc.TargetOverrideInfo",
-    "source": {
-      "__id__": 14
-    },
-    "sourceInfo": {
-      "__id__": 642
-    },
-    "propertyPath": [
-      "animPlayer"
-    ],
-    "target": {
-      "__id__": 14
-    },
-    "targetInfo": {
       "__id__": 643
     }
   },
   {
     "__type__": "cc.TargetInfo",
     "localID": [
-      "5104514wBD7q5TA7WPcHyg"
-    ]
-  },
-  {
-    "__type__": "cc.TargetInfo",
-    "localID": [
-      "90lz+imUlMkqt3R2gSomnZ"
+      "04xf7FNHFAL7Qe0h2LkZ1L"
     ]
   },
   {

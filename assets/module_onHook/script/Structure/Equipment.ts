@@ -1,6 +1,7 @@
-import { log, randomRange, randomRangeInt } from "cc";
+import { log, randomRange, randomRangeInt, SpriteAtlas, SpriteFrame } from "cc";
 import { getstrengthen_dataById } from "../data/strengthen_data";
 import { generateEquipment } from "../Util/GameUtil";
+import { DataGetter } from "../Util/DataGetter";
 
 export enum StrengthenState {
     success,
@@ -178,7 +179,7 @@ export class EquipmentProperty {
 
 
 export enum Quality {
-    white,
+    white = 1,
     green,
     blue,
     purple,

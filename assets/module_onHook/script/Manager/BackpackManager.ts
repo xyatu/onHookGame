@@ -409,7 +409,7 @@ export class BackpackManager extends Component {
         let es: EquipmentState = equipmentUI.getComponent(EquipmentState);
         es.setStrengthenLevel(0);
         es.index = index;
-        es.setStyle(eb.item.region, eb.item.quality, eb.isEquip, eb.isLock);
+        es.setStyle(eb.item.region, eb.item.quality, eb.item.id, eb.isEquip, eb.isLock);
         bm.backpackBox.addChild(equipmentUI);
         bm.backpack.getItem(index).index = equipmentUI.getSiblingIndex();
         bm.newES = es;

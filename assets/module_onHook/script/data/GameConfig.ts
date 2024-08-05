@@ -2,11 +2,11 @@ import { size, v3 } from "cc";
 
 export class GameConfig {
     public static qualityWeight = {
-        0: 512,
-        1: 128,
-        2: 32,
-        3: 8,
-        4: 1,
+        1: 512,
+        2: 128,
+        3: 32,
+        4: 8,
+        5: 1,
     };
 
     public static backpackSize: number = 32;

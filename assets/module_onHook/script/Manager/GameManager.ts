@@ -1,4 +1,4 @@
-import { _decorator, Button, Component, director, Game, game, instantiate, Label, log, Node, NodeEventType, Prefab, ProgressBar } from 'cc';
+import { _decorator, Button, Component, director, Game, game, instantiate, Label, log, Node, NodeEventType, Prefab, ProgressBar, SpriteAtlas } from 'cc';
 import { Equipment, Quality, Region, regionToEngString, TestregionToString } from '../Structure/Equipment';
 import { BackpackManager } from './BackpackManager';
 import { EventManager } from './EventManager';
@@ -14,6 +14,7 @@ import { StrengthenComp } from '../Component/StrengthenComp';
 import { getstrengthen_dataById } from '../data/strengthen_data';
 import { MoveTipComp } from '../Component/MoveTipComp';
 import { SaveGame } from '../Util/SaveGameUtil';
+import { DataGetter } from '../Util/DataGetter';
 const { ccclass, property } = _decorator;
 
 
@@ -49,8 +50,6 @@ export class GameManager extends Component {
 
     protected onLoad(): void {
         GameManager.inst = this;
-        // 绑定游戏退出事件
-        this.registerEvent();
     }
 
     registerEvent() {
@@ -93,8 +92,6 @@ export class GameManager extends Component {
             eventManager.cbOnEquipmentUnSelect.register(this.onEUS_hideOptions);
         }
         this.canvas.on(NodeEventType.TOUCH_END, this.onEquipmentUnSelect);
-
-        SaveGame.get().loadGame();
     }
 
     protected update(dt: number): void {
@@ -116,6 +113,12 @@ export class GameManager extends Component {
     }
 
     public gameStart() {
+        // 绑定游戏退出事件
+        this.registerEvent();
+
+        log(DataGetter.inst.getRes(SpriteAtlas,'equipment'))
+
+        SaveGame.get().loadGame();
         BackpackManager.inst.gameStart();
         PropertyManager.inst.gameStart();
         RoleManager.inst.gameStart();

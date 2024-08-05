@@ -1,11 +1,11 @@
-import { AudioClip, SpriteAtlas, SpriteFrame, math } from "cc";
+import { AudioClip, SpriteAtlas, SpriteFrame, log, math } from "cc";
 import { GameConfig } from "../data/GameConfig";
 import { Anim, AnimType, Sound } from "../Structure/Anim";
 import { DataGetter } from "./DataGetter";
 import { getsound_dataById } from "../data/sound_data";
 import { StrengthenState } from "../Structure/Equipment";
-import { equipment_data } from "../data/equipment_data";
 import { enemy_data, getenemy_dataById } from "../data/enemy_data";
+import { equipment_data } from "../data/equipment_data";
 
 export function calcAttackSpeed(quickness: number) {
     return GameConfig.baseInterval - GameConfig.baseInterval * (quickness * (1 - quickness / (quickness + 100)) * 0.01);
