@@ -1,4 +1,4 @@
-import { _decorator, Button, Component, director, game, instantiate, Label, log, Node, NodeEventType, Prefab, ProgressBar } from 'cc';
+import { _decorator, Button, Component, director, Game, game, instantiate, Label, log, Node, NodeEventType, Prefab, ProgressBar } from 'cc';
 import { Equipment, Quality, Region, regionToEngString, TestregionToString } from '../Structure/Equipment';
 import { BackpackManager } from './BackpackManager';
 import { EventManager } from './EventManager';
@@ -50,10 +50,13 @@ export class GameManager extends Component {
     protected onLoad(): void {
         GameManager.inst = this;
         // 绑定游戏退出事件
-        this.registerExitEvent();
+        this.registerEvent();
     }
 
-    registerExitEvent() {
+    registerEvent() {
+
+        game.on(Game.EVENT_SHOW, this.onShow, this);
+
         // 浏览器窗口关闭或刷新事件
         window.addEventListener('beforeunload', this.saveDate);
         // 移动端页面隐藏事件
@@ -62,6 +65,10 @@ export class GameManager extends Component {
                 this.saveDate();
             }
         });
+    }
+
+    onShow() {
+        SaveGame.loadTime();
     }
 
     saveDate() {

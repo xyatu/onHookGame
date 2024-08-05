@@ -3,6 +3,7 @@ import { Backpack, BackpackManager, Equipment_Bag } from "../Manager/BackpackMan
 import { PropertyManager } from "../Manager/PropertyManager";
 import { RoleManager } from "../Manager/RoleManager";
 import { Equipment, EquipmentProperty } from "../Structure/Equipment";
+import { tgxUIAlert } from "../../../core_tgx/tgx";
 
 /**
  * 金币 装备 背包 怪物 挂机时间
@@ -101,9 +102,7 @@ export class SaveGame {
 
         const offLineTime: number = (new Date()).getTime() - logoutTime.getTime();
 
-        offLineTime / 1000 / 60;
-
-        log(`离线时间: ${offLineTime}`);
+        log(`离线时间: ${offLineTime / 1000 / 60} 分钟`);
 
         JSON.parse(OnHook_equipment).forEach(element => {
             let equipment: Equipment = new Equipment();
@@ -131,6 +130,29 @@ export class SaveGame {
         });
 
         log(this.equipments);
+
+    }
+
+    public static loadTime() {
+        const OnHook_date = localStorage.getItem('OnHook_date');
+
+        const logoutTime = new Date(JSON.parse(OnHook_date));
+
+        const offLineTime: number = (new Date()).getTime() - logoutTime.getTime();
+
+
+        const minute: number = Math.floor(offLineTime / 1000 / 60);
+
+        if (minute >= 1) {
+
+            const gold: number = minute * 20;
+
+            tgxUIAlert.show(`离线时间: ${minute} 分钟,获得了 ${gold} 金币收益`);
+
+            BackpackManager.inst.onChangeGold(gold);
+        }
+
+        log(`离线时间: ${minute} 分钟`);
 
     }
 }

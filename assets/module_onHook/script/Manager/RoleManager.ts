@@ -56,7 +56,7 @@ export class RoleManager extends Component {
     @property(Node)
     enemyHome: Node = null;
 
-    currentEnemyIndex: number = 2;
+    currentEnemyIndex: number = 0;
 
     getPlayer(): RoleManagerComp {
         return this.player;

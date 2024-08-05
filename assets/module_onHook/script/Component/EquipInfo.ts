@@ -64,7 +64,7 @@ export class EquipInfo extends Component {
         let equipNode = instantiate(this.equipment);
         this.equipmentIconBox.addChild(equipNode);
         equipNode.getComponent(EquipmentState).setStyle(e.region, e.quality, false, false);
-        if (e.region === 0 || e.region === 4) {
+        if (e.region === 0 || e.region === 4 || e.region === 5) {
             this.base1Name.string = '攻击:';
             this.base1val.string = e.equipmentProperty.attack.toString();
             this.base2Name.string = '敏捷:';

@@ -190,8 +190,8 @@ export enum Region {
     shield,
     helmet,
     armor,
-    earrings,
     rings,
+    earrings,
 }
 
 export function TestregionToString(region: Region) {
