@@ -65,11 +65,11 @@ export class EquipmentState extends Component {
     }
 
     setSelectStyle() {
-        this.selectFrame.active = true;
+        // this.selectFrame.active = true;
     }
 
     setUnSelectStyle() {
-        this.selectFrame.active = false;
+        // this.selectFrame.active = false;
     }
 
     equipStyle() {

@@ -2,7 +2,7 @@ import { _decorator, Component, instantiate, Label, Node, Prefab, RichText } fro
 import { Equipment, regionToString, TestregionToString } from '../Structure/Equipment';
 import { setColor, setOutline } from '../Util/GameUtil';
 import { GameConfig } from '../data/GameConfig';
-import { EquipmentState } from '../Equipment/EquipmentState';
+import { EquipmentState } from './EquipmentState';
 const { ccclass, property } = _decorator;
 
 @ccclass('EquipInfo')
@@ -57,7 +57,7 @@ export class EquipInfo extends Component {
     resetInfo(equipment: Equipment, isUp: boolean): EquipmentState {
         let e: Equipment = equipment;
 
-        this.equipName.string = `${e.name}${equipment.namesuffix}`;
+        this.equipName.string = `${e.name}${equipment.nameSuffix}`;
         this.region.string = regionToString(e.region);
         this.fighting.string = setOutline(
             setColor(e.fighting.toString(), GameConfig.fightingColor), GameConfig.outlineColor, GameConfig.fightingOutlineWidth);

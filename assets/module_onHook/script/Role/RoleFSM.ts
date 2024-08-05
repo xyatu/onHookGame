@@ -1,4 +1,4 @@
-import { _decorator, Component, log, Node } from 'cc';
+import { _decorator, Component, log, math, Node } from 'cc';
 import { RoleState } from './RoleState';
 import { FrameAnimation } from './FrameAnimation';
 import { calcAttackSpeed } from '../Util/GameUtil';
@@ -8,6 +8,7 @@ export enum RoleStateType {
     idle,
     attack,
     death,
+    move,
 }
 
 @ccclass('RoleFSM')
@@ -37,13 +38,18 @@ export class RoleFSM extends Component {
 
                 break;
             case RoleStateType.attack:
-                this.animPlayer.anim = this.state.attack;
-                let rate: number = this.state.attack.rate + Math.floor((this.state.property.quickness - 1400) / 500);
-                this.animPlayer.outInterval(rate)
+                let index: number = math.randomRangeInt(0, this.state.attack.length);
+                this.animPlayer.anim = this.state.attack[index];
+                let rate: number = this.state.attack[index].rate + Math.floor((this.state.property.quickness - 1400) / 500);
+                if (rate > this.state.attack[index].rate) rate = this.state.attack[index].rate * 2;
+                this.animPlayer.outInterval(rate);
+                break;
+            case RoleStateType.move:
+                this.animPlayer.anim = this.state.move;
                 break;
             case RoleStateType.death:
-                this.animPlayer.anim = this.state.death;
-                break;
+                this.animPlayer.death();
+                return;
         }
 
         this.animPlayer.Play();

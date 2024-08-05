@@ -1,6 +1,6 @@
 import { _decorator, Animation, animation, Button, Component, instantiate, Label, log, Node, tween, Tween, UITransform, v3, Widget } from 'cc';
 import { EquipState } from './OptionsComp';
-import { EquipmentState } from '../Equipment/EquipmentState';
+import { EquipmentState } from './EquipmentState';
 import { Equipment, regionToEngString, StrengthenState } from '../Structure/Equipment';
 import { getstrengthen_dataById } from '../data/strengthen_data';
 import { GameConfig } from '../data/GameConfig';
@@ -9,6 +9,8 @@ import { PropertyManager } from '../Manager/PropertyManager';
 import { stregnthenStateToString } from '../Util/GameUtil';
 import { GameManager } from '../Manager/GameManager';
 import { tgxUIAlert } from '../../../core_tgx/tgx';
+import { IOS } from 'cc/env';
+import { SaveGame } from '../Util/SaveGameUtil';
 const { ccclass, property } = _decorator;
 
 
@@ -37,12 +39,16 @@ export class StrengthenComp extends Component {
     private successRate: Label = null;
     @property(Label)
     private successRateAdded: Label = null;
+    @property(Label)
+    private strengthenLabel: Label = null;
     @property(Button)
     private strengthenBtn: Button = null;
     @property(Button)
     private backBtn: Button = null;
     @property(Label)
     private price: Label = null;
+    @property(Node)
+    private animNode: Node = null;
     @property(Animation)
     private strengthenAnim: Animation = null;
 
@@ -70,6 +76,7 @@ export class StrengthenComp extends Component {
 
     private setIcon(node: Node) {
         let Icon: Node = instantiate(node);
+        Icon.setPosition(0, 0, Icon.position.z)
         this.iconBox.addChild(Icon);
         Icon.getComponent(UITransform).setContentSize(152, 152);
         this.es = Icon.getComponent(EquipmentState);
@@ -98,6 +105,7 @@ export class StrengthenComp extends Component {
         this.field.active = false;
         this.fileldMask.active = false;
         this.strengthenBtn.node.active = true;
+        this.animNode.active = false;
     }
 
     protected onDisable(): void {
@@ -106,11 +114,29 @@ export class StrengthenComp extends Component {
         this.field.active = false;
         this.fileldMask.active = false;
         this.strengthenBtn.node.active = true;
+        this.animNode.active = false;
     }
 
     private doStrength() {
         if (this.priceNum > PropertyManager.inst.playerProperty.gold) {
             tgxUIAlert.show('金币不足');
+            return;
+        }
+
+        if (this.equipment.strengthenLevel >= 20) {
+            tgxUIAlert.show(`你确定要打碎吗`, true).onClick(isOK => {
+                if (isOK) {
+                    this.strengthenState = this.equipment.strengthen(this.successNum + this.useAdded());
+
+                    log(stregnthenStateToString(this.strengthenState));
+
+                    this.strengthenBtn.interactable = false;
+                    this.backBtn.interactable = false;
+
+                    this.getStrengthenTween().start();
+                }
+            })
+
             return;
         }
 
@@ -132,6 +158,7 @@ export class StrengthenComp extends Component {
             let successRate: number = data['successRate'];
             this.setSuccessRate(successRate);
             this.setPrice(price);
+            this.strengthenLabel.string = '强化';
         }
         else {
             this.setMaxLevelStyle();
@@ -143,12 +170,14 @@ export class StrengthenComp extends Component {
     }
 
     private setMaxLevelStyle() {
-        // this.successRate.string = '满级';
-        // this.strengthenBtn.node.active = false;
+        this.setSuccessRate(0);
+        this.setPrice(0);
+        this.strengthenLabel.string = '打碎';
     }
 
     private strengthenFinish() {
         let self: StrengthenComp = StrengthenComp.inst;
+        self.animNode.active = true;
         self.strengthenAnim.play();
         switch (self.strengthenState) {
             case StrengthenState.success:
@@ -166,6 +195,7 @@ export class StrengthenComp extends Component {
                 break;
             case StrengthenState.break:
                 self.setBreakStyle();
+                self.iconBox.setScale(1, 1, 1);
                 GameManager.inst.showTip('装备损坏');
                 BackpackManager.inst.onEquipmentBreak();
                 self.setAdded(null);
@@ -180,6 +210,8 @@ export class StrengthenComp extends Component {
 
         self.strengthenBtn.interactable = true;
         self.backBtn.interactable = true;
+
+        SaveGame.saveGame();
     }
 
     private useAdded(): number {
@@ -190,9 +222,9 @@ export class StrengthenComp extends Component {
     }
 
     private setAdded(added: number) {
-        this.successAdded = this.equipment.strengthenLevel - 15 + 1 / 100;
+        this.successAdded = (this.equipment.strengthenLevel - 15) / 100;
         if (this.successAdded > 0) {
-            this.successRateAdded.string = `+${this.successAdded}%`;
+            this.successRateAdded.string = `+${this.successAdded * 100}%`;
             this.successRateAdded.node.active = true;
         }
     }

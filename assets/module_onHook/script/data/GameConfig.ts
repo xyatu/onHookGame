@@ -1,5 +1,15 @@
+import { size, v3 } from "cc";
+
 export class GameConfig {
-    public static backpackSize: number = 32 + 6;
+    public static qualityWeight = {
+        0: 512,
+        1: 128,
+        2: 32,
+        3: 8,
+        4: 1,
+    };
+
+    public static backpackSize: number = 32;
 
     public static baseInterval = 1.5;//seconds
     public static baseRate = 8;
@@ -16,3 +26,10 @@ export class GameConfig {
     public static fightingOutlineWidth: number = 2;
     public static goldOutlineWidth: number = 2;
 }
+
+export const enemyPosAndSize = [
+    { pos: v3(0, 0, 0), size: size(800, 440) },
+    { pos: v3(200, 25, 0), size: size(900, 500) },
+    { pos: v3(-100, 10, 0), size: size(1000, 1600) },
+]
+

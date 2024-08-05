@@ -2,13 +2,13 @@
   "ver": "1.1.45",
   "importer": "prefab",
   "imported": true,
-  "uuid": "61a3bd91-d9ce-44d2-a5e3-c3c119896cf2",
+  "uuid": "f8ecbdd4-fc5f-4fbe-bd38-77d87f90cde1",
   "files": [
     ".json"
   ],
   "subMetas": {},
   "userData": {
-    "syncNodeName": "role",
-    "persistent": true
+    "syncNodeName": "player",
+    "persistent": false
   }
 }

@@ -3,6 +3,7 @@ import { Equipment } from '../Structure/Equipment';
 import { EquipInfo } from './EquipInfo';
 import { BackpackManager } from '../Manager/BackpackManager';
 import { GameManager } from '../Manager/GameManager';
+import { tgxUIAlert } from '../../../core_tgx/tgx';
 const { ccclass, property } = _decorator;
 
 @ccclass('SelectAlert')
@@ -106,6 +107,10 @@ export class SelectAlert extends Component {
                 bm.onEquipmentEquip();
                 break;
             case 'unequip':
+                if (BackpackManager.inst.backpackIsFull()) {
+                    tgxUIAlert.show(`背包已满`);
+                    return;
+                }
                 bm.onEquipmentUnEquip();
                 break;
             case 'exchange':

@@ -1,8 +1,8 @@
-import { _decorator, Button, Component, director, instantiate, Label, log, Node, NodeEventType, Prefab, ProgressBar } from 'cc';
+import { _decorator, Button, Component, director, game, instantiate, Label, log, Node, NodeEventType, Prefab, ProgressBar } from 'cc';
 import { Equipment, Quality, Region, regionToEngString, TestregionToString } from '../Structure/Equipment';
 import { BackpackManager } from './BackpackManager';
 import { EventManager } from './EventManager';
-import { EquipmentState } from '../Equipment/EquipmentState';
+import { EquipmentState } from '../Component/EquipmentState';
 import { EquipState, OptionsComp } from '../Component/OptionsComp';
 import { PropertyManager } from './PropertyManager';
 import { RoleManager } from './RoleManager';
@@ -13,6 +13,7 @@ import { SelectAlert } from '../Component/SelectAlert';
 import { StrengthenComp } from '../Component/StrengthenComp';
 import { getstrengthen_dataById } from '../data/strengthen_data';
 import { MoveTipComp } from '../Component/MoveTipComp';
+import { SaveGame } from '../Util/SaveGameUtil';
 const { ccclass, property } = _decorator;
 
 
@@ -48,6 +49,29 @@ export class GameManager extends Component {
 
     protected onLoad(): void {
         GameManager.inst = this;
+        // 绑定游戏退出事件
+        this.registerExitEvent();
+    }
+
+    registerExitEvent() {
+        // 浏览器窗口关闭或刷新事件
+        window.addEventListener('beforeunload', this.saveDate);
+        // 移动端页面隐藏事件
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.saveDate();
+            }
+        });
+    }
+
+    saveDate() {
+        SaveGame.get().saveDate();
+    }
+
+    onDestroy() {
+        // 移除事件监听器
+        window.removeEventListener('beforeunload', this.saveDate);
+        document.removeEventListener('visibilitychange', this.saveDate);
     }
 
     protected start(): void {
@@ -63,7 +87,7 @@ export class GameManager extends Component {
         }
         this.canvas.on(NodeEventType.TOUCH_END, this.onEquipmentUnSelect);
 
-        // this.schedule(this.spawnEquipment, 1);
+        SaveGame.get().loadGame();
     }
 
     protected update(dt: number): void {
@@ -89,6 +113,7 @@ export class GameManager extends Component {
         PropertyManager.inst.gameStart();
         RoleManager.inst.gameStart();
         this.mask.active = false;
+        RoleManager.inst.moveIn();
     }
 
     public spawnEquipment(): Equipment {
@@ -115,7 +140,7 @@ export class GameManager extends Component {
     }
 
     private playerDeath() {
-        this.playerDeathMask.active = true;
+        // this.playerDeathMask.active = true;
     }
 
     private enemyDeath() {
@@ -123,12 +148,13 @@ export class GameManager extends Component {
     }
 
     private showEnemyDeathUI() {
-        tgxUIAlert.show(`你击败了敌人，你获得了${1000}金币`, false).onClick(isOK => {
-            if (isOK) {
-                BackpackManager.inst.onChangeGold(1000);
-                RoleManager.inst.fightNext();
-            }
-        })
+        // tgxUIAlert.show(`你击败了敌人，你获得了${1000}金币`, false).onClick(isOK => {
+        //     if (isOK) {
+        //         BackpackManager.inst.onChangeGold(1000);
+        //         RoleManager.inst.fightNext();
+        //     }
+        // })
+        RoleManager.inst.fightNext();
     }
 
     public reFight() {

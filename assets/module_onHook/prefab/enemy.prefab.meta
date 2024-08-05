@@ -1,0 +1,14 @@
+{
+  "ver": "1.1.45",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "61a3bd91-d9ce-44d2-a5e3-c3c119896cf2",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "syncNodeName": "enemy",
+    "persistent": false
+  }
+}

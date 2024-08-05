@@ -1,5 +1,6 @@
 import { log, randomRange, randomRangeInt } from "cc";
-import { getRandomEquipment, getstrengthen_dataById } from "../data/strengthen_data";
+import { getstrengthen_dataById } from "../data/strengthen_data";
+import { generateEquipment } from "../Util/GameUtil";
 
 export enum StrengthenState {
     success,
@@ -11,7 +12,7 @@ export enum StrengthenState {
 export class Equipment {
     id: number = 0;
     name: string = '';
-    namesuffix: string = '';
+    nameSuffix: string = '';
     quality: Quality = Quality.white;
     region: Region = Region.weapon;
     price: number = 0;
@@ -21,7 +22,7 @@ export class Equipment {
     strengthenLevel: number = 0;
 
     constructor() {
-        let data: {} = getRandomEquipment();
+        let data: {} = generateEquipment();
         this.id = data['id'];
         this.name = data['name'];
         this.quality = data['quality'];
@@ -69,10 +70,10 @@ export class Equipment {
         }
 
         if (this.strengthenLevel != 0) {
-            this.namesuffix = ` +${this.strengthenLevel}`;
+            this.nameSuffix = ` +${this.strengthenLevel}`;
         }
         else {
-            this.namesuffix = ``;
+            this.nameSuffix = ``;
         }
 
         this.calcFighting();
@@ -81,14 +82,14 @@ export class Equipment {
     }
 
     strengthenField(equipmentProperty: EquipmentProperty, strengthenLevel: number): StrengthenState {
-        if (strengthenLevel <= 5) {
+        if (strengthenLevel < 5) {
             return StrengthenState.field;
         }
-        else if (strengthenLevel > 5 && strengthenLevel <= 10) {
+        else if (strengthenLevel >= 5 && strengthenLevel < 10) {
             this.strengthenProperty.strengthen(this.equipmentProperty, --this.strengthenLevel);
             return StrengthenState.reduce;
         }
-        else {
+        else if (strengthenLevel >= 10 && strengthenLevel < 15) {
             let reduceOdds: number = 0.5;
             let breakOdds: number = 0.5;
 
@@ -104,10 +105,29 @@ export class Equipment {
                 return StrengthenState.reduce;
             }
         }
+        else {
+            return StrengthenState.break;
+        }
+    }
+
+    toString(): string {
+        let result: string = JSON.stringify({
+            id: this.id,
+            name: this.name,
+            namesuffix: this.nameSuffix,
+            quality: this.quality,
+            region: this.region,
+            price: this.price,
+            fighting: this.fighting,
+            equipmentProperty: this.equipmentProperty.toString(),
+            strengthenProperty: this.strengthenProperty.toString(),
+            strengthenLevel: this.strengthenLevel,
+        });
+        return result;
     }
 }
 
-class EquipmentProperty {
+export class EquipmentProperty {
     attack: number = 0;
     quickness: number = 0;
     hit: number = 0;
@@ -138,6 +158,21 @@ class EquipmentProperty {
         this.hp = Math.ceil(base.hp * strengthenVal['val']);
         this.dodge = Math.ceil(base.dodge * strengthenVal['val']);
         this.tenacity = Math.ceil(base.tenacity * strengthenVal['val']);
+    }
+
+    toString(): string {
+        const result: string = JSON.stringify({
+            attack: this.attack,
+            quickness: this.quickness,
+            hit: this.hit,
+            crit: this.crit,
+            defense: this.defense,
+            hp: this.hp,
+            dodge: this.dodge,
+            tenacity: this.tenacity,
+        });
+
+        return result;
     }
 }
 

@@ -1,24 +1,21 @@
 import { _decorator, Component, EventTouch, instantiate, log, Node, NodeEventType, Prefab, ScrollView, v3 } from 'cc';
 import { Equipment, Quality, Region } from '../Structure/Equipment';
 import { EquipmentPool } from './EquipmentPool';
-import { EquipmentState } from '../Equipment/EquipmentState';
+import { EquipmentState } from '../Component/EquipmentState';
 import { EventManager } from './EventManager';
 import { PropertyManager } from './PropertyManager';
 import { GameConfig } from '../data/GameConfig';
+import { SaveGame } from '../Util/SaveGameUtil';
 const { ccclass, property } = _decorator;
 
-class Equipment_Bag {
-    private item: Equipment = null;
+export class Equipment_Bag {
+    public item: Equipment = null;
     private siblingIndex: number = 0;
-    private isLock: boolean = false;
-    private isEquip: boolean = false;
+    public isLock: boolean = false;
+    public isEquip: boolean = false;
 
     constructor(equipment: Equipment) {
         this.item = equipment;
-    }
-
-    get equipment() {
-        return this.item;
     }
 
     set index(siblingIndex: number) {
@@ -35,9 +32,6 @@ class Equipment_Bag {
     unEquip() {
         this.isEquip = false;
     }
-    getIsEquip(): boolean {
-        return this.isEquip;
-    }
 
     lock() {
         this.isLock = true;
@@ -45,12 +39,20 @@ class Equipment_Bag {
     unLock() {
         this.isLock = false;
     }
-    getIsLock(): boolean {
-        return this.isLock;
+
+    toString(): string {
+        const result: string =
+            JSON.stringify({
+                item: this.item.toString(),
+                siblingIndex: this.siblingIndex,
+                isLock: this.isLock,
+                isEquip: this.isEquip,
+            })
+        return result;
     }
 }
 
-class Backpack {
+export class Backpack {
     private item: Map<number, Equipment_Bag> = new Map();
 
     private index: number = 0;
@@ -70,6 +72,10 @@ class Backpack {
 
     getItem(index: number): Equipment_Bag {
         return this.item.get(index);
+    }
+
+    getAll(): Readonly<Equipment_Bag[]> {
+        return Array.from(this.item.values());
     }
 
     getSize(): number {
@@ -106,32 +112,35 @@ class Backpack {
 
     removeItemByIndex(index: number): number {
         this.item.delete(index);
+        this.size--;
         return this.item.size;
     }
 
     removeItemByRegion(region: Region): number {
         for (const iterator of this.item) {
-            if (iterator[1].equipment.region === region) {
+            if (iterator[1].item.region === region) {
                 this.item.delete(iterator[0]);
             }
         }
 
+        this.size--;
         return this.item.size;
     }
 
     removeItemByQuality(quality: Quality): number {
         for (const iterator of this.item) {
-            if (iterator[1].equipment.quality === quality) {
+            if (iterator[1].item.quality === quality) {
                 this.item.delete(iterator[0]);
             }
         }
+        this.size--;
         return this.item.size;
     }
 
     getCanSaleAll(): number[] {
         let result: number[] = [];
         for (const iterator of this.item) {
-            if (!iterator[1].getIsEquip() && !iterator[1].getIsLock()) {
+            if (!iterator[1].isEquip && !iterator[1].isLock) {
                 result.push(iterator[0]);
             }
         }
@@ -143,7 +152,7 @@ class Backpack {
         if (this.item.has(index)) {
             this.item.get(index).equip();
             this.size--;
-            return this.item.get(index).equipment;
+            return this.item.get(index).item;
         }
         return null;
     }
@@ -151,13 +160,13 @@ class Backpack {
         if (this.item.has(index)) {
             this.item.get(index).unEquip();
             this.size++;
-            return this.item.get(index).equipment;
+            return this.item.get(index).item;
         }
         return null;
     }
     isEquip(index: number): boolean {
         if (this.item.has(index)) {
-            return this.item.get(index).getIsEquip();
+            return this.item.get(index).isEquip;
         }
 
         return null;
@@ -166,20 +175,20 @@ class Backpack {
     lock(index: number): Equipment {
         if (this.item.has(index)) {
             this.item.get(index).lock();
-            return this.item.get(index).equipment;
+            return this.item.get(index).item;
         }
         return null;
     }
     unLock(index: number): Equipment {
         if (this.item.has(index)) {
             this.item.get(index).unLock();
-            return this.item.get(index).equipment;
+            return this.item.get(index).item;
         }
         return null;
     }
     isLock(index: number): boolean {
         if (this.item.has(index)) {
-            return this.item.get(index).getIsLock();
+            return this.item.get(index).isLock;
         }
         return null;
     }
@@ -187,7 +196,7 @@ class Backpack {
     isFirstGet(region: Region): boolean {
         let isFirstGet: number = 0;
         for (const iterator of this.item) {
-            if (iterator[1].equipment.region === region) {
+            if (iterator[1].item.region === region) {
                 isFirstGet++;
             }
         }
@@ -280,7 +289,7 @@ export class BackpackManager extends Component {
         return this.backpack.isLock(index);
     }
     public haveEquipByES(es: EquipmentState): boolean {
-        let equipment = this.backpack.getItem(es.index).equipment;
+        let equipment = this.backpack.getItem(es.index).item;
         return this.equipmentColumn.hasEquip(equipment.region) !== -1;
     }
     public haveEquipByRegion(region: Region): boolean {
@@ -293,8 +302,12 @@ export class BackpackManager extends Component {
         return this.backpack.getSize() >= GameConfig.backpackSize;
     }
 
-    public gameStart() {
+    public getBackpack(): Readonly<Backpack> {
+        return this.backpack;
+    }
 
+    public gameStart() {
+        this.restore(SaveGame.get().equipments);
     }
 
     //In Data==================================================
@@ -304,8 +317,8 @@ export class BackpackManager extends Component {
         bm.isSelect = es.index;
         bm.selectES = es;
 
-        let equipment: Equipment = bm.backpack.getItem(es.index).equipment;
-        log(`拿起了 ${equipment.name}${equipment.namesuffix} 它的属性是:${equipment.equipmentProperty.hp != 0 ? '生命:' + equipment.equipmentProperty.hp + ';' : ''}${equipment.equipmentProperty.attack != 0 ? '攻击:' + equipment.equipmentProperty.attack + ';' : ''}${equipment.equipmentProperty.defense != 0 ? '防御:' + equipment.equipmentProperty.defense + ';' : ''}${equipment.equipmentProperty.quickness != 0 ? '敏捷:' + equipment.equipmentProperty.quickness + ';' : ''}${equipment.equipmentProperty.hit != 0 ? '命中:' + equipment.equipmentProperty.hit + ';' : ''}${equipment.equipmentProperty.crit != 0 ? '暴击:' + equipment.equipmentProperty.crit + ';' : ''}${equipment.equipmentProperty.dodge != 0 ? '闪避:' + equipment.equipmentProperty.dodge + ';' : ''}${equipment.equipmentProperty.tenacity != 0 ? '坚韧:' + equipment.equipmentProperty.tenacity + ';' : ''}`)
+        let equipment: Equipment = bm.backpack.getItem(es.index).item;
+        log(`拿起了 ${equipment.name}${equipment.nameSuffix} 它的属性是:${equipment.equipmentProperty.hp != 0 ? '生命:' + equipment.equipmentProperty.hp + ';' : ''}${equipment.equipmentProperty.attack != 0 ? '攻击:' + equipment.equipmentProperty.attack + ';' : ''}${equipment.equipmentProperty.defense != 0 ? '防御:' + equipment.equipmentProperty.defense + ';' : ''}${equipment.equipmentProperty.quickness != 0 ? '敏捷:' + equipment.equipmentProperty.quickness + ';' : ''}${equipment.equipmentProperty.hit != 0 ? '命中:' + equipment.equipmentProperty.hit + ';' : ''}${equipment.equipmentProperty.crit != 0 ? '暴击:' + equipment.equipmentProperty.crit + ';' : ''}${equipment.equipmentProperty.dodge != 0 ? '闪避:' + equipment.equipmentProperty.dodge + ';' : ''}${equipment.equipmentProperty.tenacity != 0 ? '坚韧:' + equipment.equipmentProperty.tenacity + ';' : ''}`)
     }
 
     private onEUS_data(es: EquipmentState) {
@@ -322,7 +335,7 @@ export class BackpackManager extends Component {
 
     private onEE_equipmentColumn(es: EquipmentState) {
         let bm: BackpackManager = BackpackManager.inst;
-        bm.equipmentColumn.addItem(es.index, bm.backpack.getItem(es.index).equipment);
+        bm.equipmentColumn.addItem(es.index, bm.backpack.getItem(es.index).item);
     }
 
     private onEE_removeFromBackpack(es: EquipmentState) {
@@ -334,7 +347,7 @@ export class BackpackManager extends Component {
         let pm: PropertyManager = PropertyManager.inst;
         let bm: BackpackManager = BackpackManager.inst;
 
-        pm.changeProperty(bm.backpack.getItem(es.index).equipment, true);
+        pm.changeProperty(bm.backpack.getItem(es.index).item, true);
     }
 
     private onEL_data(es: EquipmentState) {
@@ -360,18 +373,18 @@ export class BackpackManager extends Component {
         let pm: PropertyManager = PropertyManager.inst;
         let bm: BackpackManager = BackpackManager.inst;
 
-        pm.changeProperty(bm.backpack.getItem(es.index).equipment, false);
+        pm.changeProperty(bm.backpack.getItem(es.index).item, false);
     }
     private onS_data(es: EquipmentState) {
         let bm: BackpackManager = BackpackManager.inst;
         if (es) {
-            bm.onChangeGold(bm.backpack.getItem(es.index).equipment.price);
+            bm.onChangeGold(bm.backpack.getItem(es.index).item.price);
             bm.backpack.removeItemByIndex(es.index);
         }
         else {
             let canRemove: number[] = bm.backpack.getCanSaleAll();
             canRemove.forEach(item => {
-                bm.onChangeGold(bm.backpack.getItem(item).equipment.price);
+                bm.onChangeGold(bm.backpack.getItem(item).item.price);
                 bm.backpack.removeItemByIndex(item);
             })
         }
@@ -394,8 +407,9 @@ export class BackpackManager extends Component {
         let eb: Equipment_Bag = bm.backpack.getItem(index);
         let equipmentUI: Node = EquipmentPool.inst.get();
         let es: EquipmentState = equipmentUI.getComponent(EquipmentState);
+        es.setStrengthenLevel(0);
         es.index = index;
-        es.setStyle(eb.equipment.region, eb.equipment.quality, eb.getIsEquip(), eb.getIsLock());
+        es.setStyle(eb.item.region, eb.item.quality, eb.isEquip, eb.isLock);
         bm.backpackBox.addChild(equipmentUI);
         bm.backpack.getItem(index).index = equipmentUI.getSiblingIndex();
         bm.newES = es;
@@ -424,12 +438,12 @@ export class BackpackManager extends Component {
     private onEE_equipmentColumnUI(es_out: EquipmentState) {
         let bm: BackpackManager = BackpackManager.inst;
         let eb: Equipment_Bag = bm.backpack.getItem(es_out.index);
-        let equipment: Equipment = eb.equipment;
+        let equipment: Equipment = eb.item;
         let region: Region = equipment.region;
         es_out.node.setPosition(v3(0, 0, es_out.node.position.z))
         bm.equipmentColumnBox.children[region].addChild(es_out.node);
         bm.equipmentNameBox.children[region].children[0].active = false;
-        log(`穿上了 ${equipment.name}${equipment.namesuffix} 它的属性是:${equipment.equipmentProperty.hp != 0 ? '生命:' + equipment.equipmentProperty.hp + ';' : ''}${equipment.equipmentProperty.attack != 0 ? '攻击:' + equipment.equipmentProperty.attack + ';' : ''}${equipment.equipmentProperty.defense != 0 ? '防御:' + equipment.equipmentProperty.defense + ';' : ''}${equipment.equipmentProperty.quickness != 0 ? '敏捷:' + equipment.equipmentProperty.quickness + ';' : ''}${equipment.equipmentProperty.hit != 0 ? '命中:' + equipment.equipmentProperty.hit + ';' : ''}${equipment.equipmentProperty.crit != 0 ? '暴击:' + equipment.equipmentProperty.crit + ';' : ''}${equipment.equipmentProperty.dodge != 0 ? '闪避:' + equipment.equipmentProperty.dodge + ';' : ''}${equipment.equipmentProperty.tenacity != 0 ? '坚韧:' + equipment.equipmentProperty.tenacity + ';' : ''}`)
+        log(`穿上了 ${equipment.name}${equipment.nameSuffix} 它的属性是:${equipment.equipmentProperty.hp != 0 ? '生命:' + equipment.equipmentProperty.hp + ';' : ''}${equipment.equipmentProperty.attack != 0 ? '攻击:' + equipment.equipmentProperty.attack + ';' : ''}${equipment.equipmentProperty.defense != 0 ? '防御:' + equipment.equipmentProperty.defense + ';' : ''}${equipment.equipmentProperty.quickness != 0 ? '敏捷:' + equipment.equipmentProperty.quickness + ';' : ''}${equipment.equipmentProperty.hit != 0 ? '命中:' + equipment.equipmentProperty.hit + ';' : ''}${equipment.equipmentProperty.crit != 0 ? '暴击:' + equipment.equipmentProperty.crit + ';' : ''}${equipment.equipmentProperty.dodge != 0 ? '闪避:' + equipment.equipmentProperty.dodge + ';' : ''}${equipment.equipmentProperty.tenacity != 0 ? '坚韧:' + equipment.equipmentProperty.tenacity + ';' : ''}`)
     }
 
     private onEE_removeFromBackpackUI(es: EquipmentState) {
@@ -459,7 +473,7 @@ export class BackpackManager extends Component {
     private onEUE_equipmentColumnUI(es: EquipmentState) {
         let bm: BackpackManager = BackpackManager.inst;
         let eb: Equipment_Bag = bm.backpack.getItem(es.index);
-        let equipment: Equipment = eb.equipment;
+        let equipment: Equipment = eb.item;
         let region: Region = equipment.region;
         bm.backpackBox.addChild(bm.equipmentColumnBox.children[region].children[0]);
         eb.index = bm.backpackBox.children.length - 1;
@@ -491,17 +505,23 @@ export class BackpackManager extends Component {
 
 
     //Broadcast==================================================
-    public pickupEquipmentData(equipment: Equipment): number {
+    public pickupEquipmentData(equipment: Equipment, dontSave?: boolean): number {
         if (this.backpack.getSize() >= GameConfig.backpackSize) {
             return;
         }
         let index: number = this.backpack.addItem(equipment);
 
+        if (!dontSave) SaveGame.saveGame();
+
         return index;
     }
 
-    public pickupEquipmentUI(index: number) {
+    public pickupEquipmentUI(index: number, dontSave?: boolean) {
+        let bm: BackpackManager = BackpackManager.inst;
+        let eb: Equipment_Bag = bm.backpack.getItem(index);
         EventManager.inst.cbOnPickupEquipment.broadCast(index);
+        if (!dontSave) SaveGame.saveGame();
+        return this.backpackBox.children[eb.index].getComponent(EquipmentState);
     }
 
     public onEquipmentSelect(es: EquipmentState) {
@@ -510,30 +530,35 @@ export class BackpackManager extends Component {
             return;
         }
         EventManager.inst.cbOnEquipmentSelect.broadCast(es);
-        let backpackE: Equipment = this.backpack.getItem(es.index).equipment;
+        let backpackE: Equipment = this.backpack.getItem(es.index).item;
         let equipE: Equipment = this.equipmentColumn.getItemByRegion(backpackE.region);
         EventManager.inst.cbFllowEquipmentSelect.broadCast(backpackE, this.isLock(es.index), this.isEquip(es.index), equipE);
+        SaveGame.saveGame();
     }
 
     public onEquipmentUnSelect() {
         if (this.selectES || this.isSelect != -1) {
             EventManager.inst.cbOnEquipmentUnSelect.broadCast(this.selectES);
         }
+        SaveGame.saveGame();
     }
 
-    public onEquipmentEquip(es?: EquipmentState) {
+    public onEquipmentEquip(es?: EquipmentState, dontSave?: boolean) {
         EventManager.inst.cbOnEquipmentEquip.broadCast(es ? es : this.selectES);
         // EventManager.inst.cbOnBackpackReorder.broadCast(es ? es : this.selectES, 0);
         this.onEquipmentUnSelect();
+        if (!dontSave) SaveGame.saveGame();
     }
 
     public onEquipmentUnEquip(es?: EquipmentState) {
         EventManager.inst.cbOnEquipmentUnEquip.broadCast(es ? es : this.selectES);
         // EventManager.inst.cbOnBackpackReorder.broadCast(es ? es : this.selectES, this.equipmentColumn.size());
+        SaveGame.saveGame();
     }
 
     public exchangeNew() {
         this.onExchangeEquip(this.newES);
+        SaveGame.saveGame();
     }
 
     public onExchangeEquip(equipmentState?: EquipmentState) {
@@ -543,45 +568,54 @@ export class BackpackManager extends Component {
         for (let index = 0; index < 6; index++) {
             if (!this.equipmentColumnBox.children[index].children[0]) continue;
             es = this.equipmentColumnBox.children[index].children[0].getComponent(EquipmentState);
-            let esRegion: Region = this.backpack.getItem(es.index).equipment.region;
-            let selectRegion: Region = this.backpack.getItem(selectIndex).equipment.region;
+            let esRegion: Region = this.backpack.getItem(es.index).item.region;
+            let selectRegion: Region = this.backpack.getItem(selectIndex).item.region;
             if (esRegion === selectRegion) break;
         }
 
         this.onEquipmentUnEquip(es);
         this.onEquipmentEquip();
+        SaveGame.saveGame();
     }
 
-    public onEquipmentLock() {
+    public onEquipmentLock(es_out?: EquipmentState, dontSave?: boolean) {
         let bm: BackpackManager = BackpackManager.inst;
-        EventManager.inst.cbOnEquipmentLock.broadCast(bm.selectES);
+        const es: EquipmentState = es_out ? es_out : bm.selectES;
+        EventManager.inst.cbOnEquipmentLock.broadCast(es);
+        if (dontSave) SaveGame.saveGame();
     }
 
     public onEquipmentUnLock() {
         let bm: BackpackManager = BackpackManager.inst;
         EventManager.inst.cbOnEquipmentUnLock.broadCast(bm.selectES);
+        SaveGame.saveGame();
     }
 
     public onStrengthen() {
         this.strengthenES = this.selectES;
-        EventManager.inst.cbOnEquipmentStrengthen.broadCast(this.selectES, this.backpack.getItem(this.selectES.index).equipment);
+        EventManager.inst.cbOnEquipmentStrengthen.broadCast(this.selectES, this.backpack.getItem(this.selectES.index).item);
+        SaveGame.saveGame();
     }
 
     public onSale(isAll: boolean) {
         EventManager.inst.cbOnEquipmentSale.broadCast(isAll ? null : this.selectES);
+        SaveGame.saveGame();
     }
 
     public onChangeGold(gold: number) {
         EventManager.inst.cbOnChangeGold.broadCast(gold);
+        SaveGame.get().saveGold();
     }
 
     public onEquipmentBreak() {
-        this.onEquipmentUnEquip(this.strengthenES);
+        if (this.isEquip(this.strengthenES.index)) this.onEquipmentUnEquip(this.strengthenES);
         EventManager.inst.cbOnEquipmentBreak.broadCast(this.strengthenES);
+        SaveGame.saveGame();
     }
 
     public setStrengthenLevel(level: number) {
         this.strengthenES.setStrengthenLevel(level);
+        SaveGame.saveGame();
     }
 
     //eventRegister==================================================
@@ -627,6 +661,15 @@ export class BackpackManager extends Component {
             eventManager.cbOnEquipmentBreak.register(this.onEB_data);
             eventManager.cbOnEquipmentBreak.register(this.onEB_UI);
         }
+    }
+
+    public restore(equipments: Equipment_Bag[]) {
+        equipments.forEach((equipment) => {
+            let es = this.pickupEquipmentUI(this.pickupEquipmentData(equipment.item, true), true);
+            if (equipment.isEquip) this.onEquipmentEquip(es, true);
+            if (equipment.isLock) this.onEquipmentLock(es, true);
+        })
+
     }
 }
 

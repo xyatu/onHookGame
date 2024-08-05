@@ -19,6 +19,18 @@ export class FrameCallback {
     }
 }
 
+type Event__ANY_NUMBER__Void = (target: any, currentIndex: number) => void;
+
+class AllFrameCallback {
+    target: any;
+    event: Event__ANY_NUMBER__Void;
+
+    constructor(target: any, event: Event__ANY_NUMBER__Void) {
+        this.target = target;
+        this.event = event;
+    }
+}
+
 @ccclass
 export class FrameAnimation extends Component {
 
@@ -38,6 +50,8 @@ export class FrameAnimation extends Component {
     protected runAtStart: boolean = true;
 
     protected frameCallback: Array<FrameCallback> = [];
+
+    protected allFrameCallback: AllFrameCallback = null;
 
     protected completeCallback: Array<EventHandler> = [];
 
@@ -63,9 +77,30 @@ export class FrameAnimation extends Component {
         this.currentAnim = anim;
         this.frameCount = anim.anim.length;
         this.loop = anim.isLoop;
-        this.animType = anim.type;
+        this.setAnimType(anim.type);
         this.rate = anim.rate;
         this.currentIndex = 0;
+    }
+
+    public death() {
+        this.animType = AnimType.death;
+        this.Stop();
+    }
+
+    public isAttack() {
+        return this.animType === AnimType.attack;
+    }
+
+    public isMove() {
+        return this.animType === AnimType.move;
+    }
+
+    public isIdle() {
+        return this.animType === AnimType.idle;
+    }
+
+    private setAnimType(animType: AnimType) {
+        this.animType = animType;
     }
 
     public gameStart() {
@@ -82,7 +117,7 @@ export class FrameAnimation extends Component {
         if (this.animType === AnimType.idle) {
             this.intervalTick -= dt;
             if (this.intervalTick <= 0) {
-                this.getComponent(RoleManagerComp).changeToAttack();
+                this.node.parent.getComponent(RoleManagerComp).changeToAttack();
             }
         }
 
@@ -97,11 +132,14 @@ export class FrameAnimation extends Component {
      * 改变帧动画的图片
      */
     private ChangeFrame(): void {
+
+        if (this.allFrameCallback) this.allFrameCallback.event(this.allFrameCallback.target, this.currentIndex);
+
         let isIndexEnd = this.currentIndex >= this.frameCount;
 
         this.frameCallback.forEach(fb => {
             if (fb.frame === this.currentIndex) {
-                fb.event(fb.target);
+                fb.event(fb.target, this.currentIndex);
             }
         });
 
@@ -155,12 +193,22 @@ export class FrameAnimation extends Component {
      * 停止
      */
     public Stop(): void {
+
+
+        if (this.animType === AnimType.move) {
+            log(11)
+        }
+
         this.running = false;
         this.runAtStart = false;
     }
 
     public bindFrameCallback(frameCallback: FrameCallback) {
         this.frameCallback.push(frameCallback);
+    }
+
+    public registAllFrameCallback(target: any, event: Event__ANY_NUMBER__Void) {
+        this.allFrameCallback = new AllFrameCallback(target, event);
     }
 
     protected registCompleteCallback() {
@@ -173,7 +221,7 @@ export class FrameAnimation extends Component {
     }
 
     protected resetInterval() {
-        let rm: RoleManagerComp = this.getComponent(RoleManagerComp);
+        let rm: RoleManagerComp = this.node.parent.getComponent(RoleManagerComp);
 
         switch (this.animType) {
             case AnimType.idle:
@@ -185,8 +233,6 @@ export class FrameAnimation extends Component {
                 break;
 
             case AnimType.death:
-                log(this.rate);
-                this.Stop();
                 break;
         }
 

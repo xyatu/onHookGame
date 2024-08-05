@@ -6,7 +6,8 @@ import { BackpackManager } from '../Manager/BackpackManager';
 import { GameManager } from '../Manager/GameManager';
 import { Equipment } from '../Structure/Equipment';
 import { EquipInfo } from './EquipInfo';
-import { EquipmentState } from '../Equipment/EquipmentState';
+import { EquipmentState } from './EquipmentState';
+import { SaveGame } from '../Util/SaveGameUtil';
 const { ccclass, property } = _decorator;
 
 @ccclass('CreateEquipmentComp')
@@ -82,6 +83,8 @@ export class CreateEquipmentComp extends Component {
         this.newIndex = BackpackManager.inst.pickupEquipmentData(this.newEquipment);
 
         this.newES.index = this.newIndex;
+
+        SaveGame.saveGame();
     }
 
     private setFinishiStyle(equipment: Equipment) {
@@ -117,10 +120,21 @@ export class CreateEquipmentComp extends Component {
         this.node.active = false;
     }
 
-    private onBackClick() {
+    private onCloseClick() {
         BackpackManager.inst.pickupEquipmentUI(this.newES.index);
 
         this.hideThis();
+    }
+
+    private backBase() {
+        BackpackManager.inst.pickupEquipmentUI(this.newES.index);
+        this.base.active = true;
+        this.finishHasOld.active = false;
+        this.finishNoOld.active = false;
+
+        this.newEquipment = null;
+        this.newES = null;
+        this.oldEquipment = null;
     }
 }
 

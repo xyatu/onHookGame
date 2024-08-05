@@ -3,6 +3,7 @@ import { AudioClip, SpriteFrame } from "cc";
 export enum AnimType {
     idle,
     attack,
+    move,
     death,
 }
 

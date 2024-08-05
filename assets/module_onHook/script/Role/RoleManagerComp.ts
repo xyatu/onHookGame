@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Animation, animation, color, Component, Node, Sprite } from 'cc';
 import { DamageComp } from './DamageComp';
 import { RoleState } from './RoleState';
 import { FrameAnimation } from './FrameAnimation';
@@ -6,6 +6,7 @@ import { RoleFSM, RoleStateType } from './RoleFSM';
 import { RoleManager } from '../Manager/RoleManager';
 import { GameManager } from '../Manager/GameManager';
 import { BackpackManager } from '../Manager/BackpackManager';
+import { RoleBehavior } from './RoleBehavior';
 const { ccclass, property } = _decorator;
 
 @ccclass('RoleManagerComp')
@@ -22,9 +23,17 @@ export class RoleManagerComp extends Component {
     @property(RoleFSM)
     stateMachine: RoleFSM = null;
 
+    @property(Animation)
+    deathAnim: Animation = null;
+
     gameStart() {
         this.stateMachine.gameStart();
         this.animPlayer.gameStart();
+    }
+
+    moveIn() {
+
+        this.getComponent(RoleBehavior).moveTo();
     }
 
     changeToAttack() {
@@ -35,15 +44,19 @@ export class RoleManagerComp extends Component {
         this.stateMachine.changeState(RoleStateType.idle);
     }
 
-    changeToDeath() {
-        this.stateMachine.changeState(RoleStateType.death);
+    changeToMove() {
+        this.stateMachine.changeState(RoleStateType.move);
+    }
 
-        GameManager.inst.death(this.state.isPlayer);
+    changeToDeath() {
+        this.deathAnim.play();
+
+        this.stateMachine.changeState(RoleStateType.death);
     }
 
     checkTargetLife(isPlayer: boolean) {
         let target: RoleManagerComp = isPlayer ? RoleManager.inst.getEnemy() : RoleManager.inst.getPlayer();
-        return target.stateMachine.stateType !== RoleStateType.death;
+        return target.state.isLife;
     }
 
     changeGold(gold: number) {

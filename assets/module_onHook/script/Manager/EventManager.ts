@@ -1,5 +1,5 @@
 import { _decorator, Component } from 'cc';
-import { EquipmentState } from '../Equipment/EquipmentState';
+import { EquipmentState } from '../Component/EquipmentState';
 import { Equipment } from '../Structure/Equipment';
 const { ccclass } = _decorator;
 

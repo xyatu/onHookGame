@@ -16,11 +16,13 @@ export class RoleState extends Component {
     @property(ProgressBar)
     hpBar: ProgressBar = null;
 
+    isLife: boolean = false;
+
     private currentHp: number = 0;
 
     public idle: Anim = null;
-    public attack: Anim = null;
-    public death: Anim = null;
+    public attack: Anim[] = [];
+    public move: Anim = null;
 
     public rate: number = 8;
 
@@ -51,13 +53,14 @@ export class RoleState extends Component {
         if (this.currentHp <= 0) {
             this.currentHp = 0;
             this.getComponent(RoleManagerComp).changeToDeath();
+            this.isLife = false;
         }
 
         this.currentHpUI.string = this.currentHp.toString();
         this.hpBar.progress = this.currentHp / this.property.hp;
     }
 
-    resetState(roleProperty: RoleProperty, idle: Anim, attack: Anim, death: Anim) {
+    resetState(roleProperty: RoleProperty, idle: Anim, attack1: Anim, attack2: Anim, attack3: Anim, move: Anim) {
         this.resetProperty(roleProperty);
         this.currentHp = this.property.hp;
         this.hpBar.progress = 1;
@@ -65,10 +68,17 @@ export class RoleState extends Component {
         this.currentHpUI.string = this.currentHp.toString();
 
         this.idle = idle;
-        this.attack = attack;
-        this.death = death;
+        this.attack = [];
+        if (attack1) this.attack.push(attack1);
+        if (attack2) this.attack.push(attack2);
+        if (attack3) this.attack.push(attack3);
+        this.move = move;
 
-        this.rate = attack.rate;
+        this.rate = attack1.rate;
+    }
+
+    life() {
+        this.isLife = true;
     }
 
     resetProperty(roleProperty: RoleProperty) {

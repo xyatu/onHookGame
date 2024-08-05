@@ -28,17 +28,17 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 212
-      },
-      {
         "__id__": 214
       },
       {
         "__id__": 216
+      },
+      {
+        "__id__": 218
       }
     ],
     "_prefab": {
-      "__id__": 218
+      "__id__": 220
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -284,9 +284,6 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 203
-      },
-      {
         "__id__": 205
       },
       {
@@ -294,10 +291,13 @@
       },
       {
         "__id__": 209
+      },
+      {
+        "__id__": 211
       }
     ],
     "_prefab": {
-      "__id__": 211
+      "__id__": 213
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -1634,7 +1634,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Label",
+    "_name": "strengthenText",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -2562,7 +2562,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Sprite",
+    "_name": "Anim",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -4211,7 +4211,7 @@
         "__id__": 186
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 194
@@ -4224,15 +4224,18 @@
       },
       {
         "__id__": 200
+      },
+      {
+        "__id__": 202
       }
     ],
     "_prefab": {
-      "__id__": 202
+      "__id__": 204
     },
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 7.651,
-      "y": -33.454,
+      "x": 0,
+      "y": 10,
       "z": 0
     },
     "_lrot": {
@@ -4285,7 +4288,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 26.753,
+      "y": 0,
       "z": 0
     },
     "_lrot": {
@@ -4406,7 +4409,7 @@
     "_top": 0,
     "_bottom": 0,
     "_horizontalCenter": 0,
-    "_verticalCenter": 26.753,
+    "_verticalCenter": 0,
     "_isAbsLeft": true,
     "_isAbsRight": true,
     "_isAbsTop": true,
@@ -4450,8 +4453,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 515.302,
-      "height": 264.26800000000003
+      "width": 660,
+      "height": 350
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -4565,8 +4568,8 @@
     "_right": 0,
     "_top": 0,
     "_bottom": 0,
-    "_horizontalCenter": 7.651,
-    "_verticalCenter": -33.454,
+    "_horizontalCenter": 0,
+    "_verticalCenter": 10,
     "_isAbsLeft": true,
     "_isAbsRight": true,
     "_isAbsTop": true,
@@ -4582,6 +4585,24 @@
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "68mHaoOWhDmafQ3qUK0X4f"
+  },
+  {
+    "__type__": "cc.BlockInputEvents",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 185
+    },
+    "_enabled": true,
+    "__prefab": {
+      "__id__": 203
+    },
+    "_id": ""
+  },
+  {
+    "__type__": "cc.CompPrefabInfo",
+    "fileId": "76GPPebzlDmoAKkhV0MmO3"
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -4606,7 +4627,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 204
+      "__id__": 206
     },
     "_contentSize": {
       "__type__": "cc.Size",
@@ -4634,7 +4655,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 206
+      "__id__": 208
     },
     "_customMaterial": null,
     "_srcBlendFactor": 2,
@@ -4679,7 +4700,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 208
+      "__id__": 210
     },
     "_resizeMode": 0,
     "_layoutType": 0,
@@ -4717,7 +4738,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 210
+      "__id__": 212
     },
     "_alignFlags": 18,
     "_target": null,
@@ -4766,7 +4787,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 213
+      "__id__": 215
     },
     "_contentSize": {
       "__type__": "cc.Size",
@@ -4794,7 +4815,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 215
+      "__id__": 217
     },
     "_alignFlags": 45,
     "_target": null,
@@ -4830,7 +4851,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 217
+      "__id__": 219
     },
     "base": {
       "__id__": 119
@@ -4853,6 +4874,9 @@
     "successRateAdded": {
       "__id__": 40
     },
+    "strengthenLabel": {
+      "__id__": 73
+    },
     "strengthenBtn": {
       "__id__": 88
     },
@@ -4861,6 +4885,9 @@
     },
     "price": {
       "__id__": 81
+    },
+    "animNode": {
+      "__id__": 111
     },
     "strengthenAnim": {
       "__id__": 116

@@ -26,9 +26,3 @@ export var strengthen_data = {
 export function getstrengthen_dataById(id) {
     return strengthen_data[id] || null;
 }
-
-export function getRandomEquipment() {
-    let keys: string[] = Object.keys(equipment_data);
-    let random: number = math.randomRangeInt(0, keys.length);
-    return getequipment_dataById(keys[random]);
-}

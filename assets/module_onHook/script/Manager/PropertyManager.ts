@@ -9,12 +9,12 @@ const { ccclass, property } = _decorator;
 
 export class PlayerProperty {
     attack: number = 10;
-    quickness: number = 300;
+    quickness: number = 30;
     hit: number = 10;
     crit: number = 10;
     defense: number = 1;
-    hp: number = 1000;
-    dodge: number = 10;
+    hp: number = 100;
+    dodge: number = 1;
     tenacity: number = 1;
     attackSpeed: number = 0;
     fighting: number = 0;
