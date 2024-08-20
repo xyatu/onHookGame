@@ -13,6 +13,7 @@ import { getanim_dataById } from '../data/anim_data';
 import { PlayerState } from '../Role/PlayerState';
 import { enemyPosAndSize } from '../data/GameConfig';
 import { SaveGame } from '../Util/SaveGameUtil';
+import { playOneShotById, playOneShotBySound } from './SoundPlayer';
 const { ccclass, property } = _decorator;
 
 export class RoleProperty {

@@ -13,12 +13,12 @@ export class PlayerProperty {
     hit: number = 10;
     crit: number = 10;
     defense: number = 1;
-    hp: number = 100;
+    hp: number = 1;
     dodge: number = 1;
     tenacity: number = 1;
     attackSpeed: number = 0;
     fighting: number = 0;
-    gold: number = 10000000000;
+    gold: number = 100000;
 
     equipments: Set<Equipment> = new Set<Equipment>();
 
@@ -38,7 +38,7 @@ export class PlayerProperty {
         this.hit = 10;
         this.crit = 10;
         this.defense = 1;
-        this.hp = 1000;
+        this.hp = 1;
         this.dodge = 10;
         this.tenacity = 1;
         this.attackSpeed = 0;

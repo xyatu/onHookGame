@@ -8,6 +8,7 @@ import { RoleManagerComp } from './RoleManagerComp';
 import { RoleFSM, RoleStateType } from './RoleFSM';
 import { enemyPosAndSize } from '../data/GameConfig';
 import { GameManager } from '../Manager/GameManager';
+import { playOneShotById, playOneShotBySound } from '../Manager/SoundPlayer';
 const { ccclass, property } = _decorator;
 
 @ccclass('RoleBehavior')
@@ -24,8 +25,17 @@ export class RoleBehavior extends Component {
     }
 
     attack(self: RoleBehavior) {
-        if (self.getComponent(RoleFSM).stateType === RoleStateType.attack)
+        if (self.getComponent(RoleFSM).stateType === RoleStateType.attack) {
             RoleManager.inst.attack(self.roleState.isPlayer);
+
+            if (self.roleState.isPlayer) {
+                playOneShotById(10007);
+            }
+            else {
+                playOneShotBySound(self.node.getChildByName('Sprite').getComponent(FrameAnimation).currentAnim.sound);
+            }
+
+        }
     }
 
     move() {

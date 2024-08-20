@@ -8,6 +8,7 @@ import { Equipment } from '../Structure/Equipment';
 import { EquipInfo } from './EquipInfo';
 import { EquipmentState } from './EquipmentState';
 import { SaveGame } from '../Util/SaveGameUtil';
+import { playOneShotById } from '../Manager/SoundPlayer';
 const { ccclass, property } = _decorator;
 
 @ccclass('CreateEquipmentComp')

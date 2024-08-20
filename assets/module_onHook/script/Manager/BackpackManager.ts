@@ -1,4 +1,4 @@
-import { _decorator, Component, EventTouch, instantiate, log, Node, NodeEventType, Prefab, ScrollView, v3 } from 'cc';
+import { _decorator, AudioClip, Component, EventTouch, instantiate, log, Node, NodeEventType, Prefab, ScrollView, v3 } from 'cc';
 import { Equipment, Quality, Region } from '../Structure/Equipment';
 import { EquipmentPool } from './EquipmentPool';
 import { EquipmentState } from '../Component/EquipmentState';
@@ -6,6 +6,9 @@ import { EventManager } from './EventManager';
 import { PropertyManager } from './PropertyManager';
 import { GameConfig } from '../data/GameConfig';
 import { SaveGame } from '../Util/SaveGameUtil';
+import { tgxAudioMgr } from '../../../core_tgx/tgx';
+import { DataGetter } from '../Util/DataGetter';
+import { playOneShotById } from './SoundPlayer';
 const { ccclass, property } = _decorator;
 
 export class Equipment_Bag {
@@ -446,6 +449,11 @@ export class BackpackManager extends Component {
         log(`穿上了 ${equipment.name}${equipment.nameSuffix} 它的属性是:${equipment.equipmentProperty.hp != 0 ? '生命:' + equipment.equipmentProperty.hp + ';' : ''}${equipment.equipmentProperty.attack != 0 ? '攻击:' + equipment.equipmentProperty.attack + ';' : ''}${equipment.equipmentProperty.defense != 0 ? '防御:' + equipment.equipmentProperty.defense + ';' : ''}${equipment.equipmentProperty.quickness != 0 ? '敏捷:' + equipment.equipmentProperty.quickness + ';' : ''}${equipment.equipmentProperty.hit != 0 ? '命中:' + equipment.equipmentProperty.hit + ';' : ''}${equipment.equipmentProperty.crit != 0 ? '暴击:' + equipment.equipmentProperty.crit + ';' : ''}${equipment.equipmentProperty.dodge != 0 ? '闪避:' + equipment.equipmentProperty.dodge + ';' : ''}${equipment.equipmentProperty.tenacity != 0 ? '坚韧:' + equipment.equipmentProperty.tenacity + ';' : ''}`)
     }
 
+    private onEE_playSound() {
+
+        playOneShotById(10002);
+    }
+
     private onEE_removeFromBackpackUI(es: EquipmentState) {
         let bm: BackpackManager = BackpackManager.inst;
         let index: number = bm.backpack.getItem(es.index).index;
@@ -497,6 +505,9 @@ export class BackpackManager extends Component {
                 }
             }
         }
+    }
+    private onS_playSound(es: EquipmentState) {
+        playOneShotById(10005);
     }
 
     private onEB_UI(es: EquipmentState) {
@@ -640,6 +651,7 @@ export class BackpackManager extends Component {
             // eventManager.cbOnEquipmentEquip.register(this.onEE_showEquipmentTip);
             eventManager.cbOnEquipmentEquip.register(this.onEE_equipmentColumnUI);
             // eventManager.cbOnEquipmentEquip.register(this.onEE_removeFromBackpackUI);
+            eventManager.cbOnEquipmentEquip.register(this.onEE_playSound);
 
             eventManager.cbOnEquipmentUnEquip.register(this.onEUE_backpack);
             eventManager.cbOnEquipmentUnEquip.register(this.onEUE_equipmentColumn);
@@ -655,6 +667,7 @@ export class BackpackManager extends Component {
 
             eventManager.cbOnEquipmentSale.register(this.onS_data);
             eventManager.cbOnEquipmentSale.register(this.onS_UI);
+            eventManager.cbOnEquipmentSale.register(this.onS_playSound);
 
             eventManager.cbOnChangeGold.register(this.onCG_Data);
 

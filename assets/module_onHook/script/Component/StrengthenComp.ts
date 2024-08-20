@@ -11,6 +11,7 @@ import { GameManager } from '../Manager/GameManager';
 import { tgxUIAlert } from '../../../core_tgx/tgx';
 import { IOS } from 'cc/env';
 import { SaveGame } from '../Util/SaveGameUtil';
+import { playOneShotById } from '../Manager/SoundPlayer';
 const { ccclass, property } = _decorator;
 
 
@@ -251,6 +252,8 @@ export class StrengthenComp extends Component {
     }
 
     private getStrengthenTween(): Tween<Node> {
+
+        playOneShotById(10006);
         if (!this.strengthenTween) {
             this.strengthenTween = tween(this.iconBox);
             this.strengthenTween.to(0.5, { scale: v3(0, 0, 1) }).call(this.strengthenFinish);

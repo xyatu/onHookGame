@@ -2,6 +2,7 @@ import { _decorator, Component, log, math, Node } from 'cc';
 import { RoleState } from './RoleState';
 import { FrameAnimation } from './FrameAnimation';
 import { calcAttackSpeed } from '../Util/GameUtil';
+import { playOneShotById, playOneShotBySound } from '../Manager/SoundPlayer';
 const { ccclass, property } = _decorator;
 
 export enum RoleStateType {
@@ -29,6 +30,9 @@ export class RoleFSM extends Component {
 
         this.stateType = stateType;
 
+        this.unschedule(this.playPlayerMoveSound);
+        this.unschedule(this.playEnemyMoveSound);
+        
         switch (this.stateType) {
             case RoleStateType.idle:
                 this.animPlayer.anim = this.state.idle;
@@ -46,6 +50,8 @@ export class RoleFSM extends Component {
                 break;
             case RoleStateType.move:
                 this.animPlayer.anim = this.state.move;
+                if (this.state.isPlayer) this.schedule(this.playPlayerMoveSound, 0.25);
+                else this.schedule(this.playEnemyMoveSound, this.state.move.sound.sound.getDuration() + 0.1);
                 break;
             case RoleStateType.death:
                 this.animPlayer.death();
@@ -53,6 +59,14 @@ export class RoleFSM extends Component {
         }
 
         this.animPlayer.Play();
+    }
+
+    playPlayerMoveSound() {
+        playOneShotById(10004);
+    }
+
+    playEnemyMoveSound() {
+        playOneShotBySound(this.state.move.sound);
     }
 }
 

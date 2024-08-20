@@ -34,7 +34,7 @@ class AllFrameCallback {
 @ccclass
 export class FrameAnimation extends Component {
 
-    private currentAnim: Anim = null;
+    public currentAnim: Anim = null;
 
     @property(RoleState)
     state: RoleState = null;

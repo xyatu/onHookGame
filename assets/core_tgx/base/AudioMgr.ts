@@ -5,7 +5,7 @@ import { Node, AudioSource, AudioClip, resources, director, assetManager } from 
  * this is a sington class for audio play, can be easily called from anywhere in you project.
  * @zh
  * 这是一个用于播放音频的单件类，可以很方便地在项目的任何地方调用。
- */ 
+ */
 export class AudioMgr {
 
     private static _inst: AudioMgr;
@@ -48,7 +48,7 @@ export class AudioMgr {
      * @param sound clip or url for the audio
      * @param volume 
      */
-    playOneShot(sound: AudioClip | string, volume: number = 1.0, bundleName:string = 'resources') {
+    playOneShot(sound: AudioClip | string, volume: number = 1.0, isloop: boolean = false, bundleName: string = 'resources') {
         if (sound instanceof AudioClip) {
             this._audioSource.playOneShot(sound, volume);
         }
@@ -73,9 +73,10 @@ export class AudioMgr {
      * @param sound clip or url for the sound
      * @param volume 
      */
-    play(sound: AudioClip | string, volume: number = 1.0, bundleName:string = 'resources') {
+    play(sound: AudioClip | string, volume: number, isLoop: boolean, bundleName: string = 'resources') {
         if (sound instanceof AudioClip) {
             this._audioSource.clip = sound;
+            this._audioSource.loop = isLoop;
             this._audioSource.play();
             this.audioSource.volume = volume;
         }
@@ -111,7 +112,7 @@ export class AudioMgr {
     /**
      * resume the audio play
      */
-    resume(){
+    resume() {
         this._audioSource.play();
     }
 }

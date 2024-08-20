@@ -1,4 +1,4 @@
-import { _decorator, Button, Component, director, Game, game, instantiate, Label, log, Node, NodeEventType, Prefab, ProgressBar, SpriteAtlas } from 'cc';
+import { _decorator, AudioClip, Button, Component, director, Game, game, instantiate, Label, log, Node, NodeEventType, Prefab, ProgressBar, SpriteAtlas } from 'cc';
 import { Equipment, Quality, Region, regionToEngString, TestregionToString } from '../Structure/Equipment';
 import { BackpackManager } from './BackpackManager';
 import { EventManager } from './EventManager';
@@ -6,7 +6,7 @@ import { EquipmentState } from '../Component/EquipmentState';
 import { EquipState, OptionsComp } from '../Component/OptionsComp';
 import { PropertyManager } from './PropertyManager';
 import { RoleManager } from './RoleManager';
-import { tgxUIAlert } from '../../../core_tgx/tgx';
+import { tgxAudioMgr, tgxUIAlert } from '../../../core_tgx/tgx';
 import { GameConfig } from '../data/GameConfig';
 import { WECHAT } from 'cc/env';
 import { SelectAlert } from '../Component/SelectAlert';
@@ -15,6 +15,8 @@ import { getstrengthen_dataById } from '../data/strengthen_data';
 import { MoveTipComp } from '../Component/MoveTipComp';
 import { SaveGame } from '../Util/SaveGameUtil';
 import { DataGetter } from '../Util/DataGetter';
+import { getsound_dataById } from '../data/sound_data';
+import { playOneShotById, playSound } from './SoundPlayer';
 const { ccclass, property } = _decorator;
 
 
@@ -85,6 +87,10 @@ export class GameManager extends Component {
 
         this.mask.active = true;
 
+        this.canvas.on(NodeEventType.TOUCH_START, () => {
+            playOneShotById(10003);
+        }, this);
+
         if (eventManager) {
             eventManager.cbFllowEquipmentSelect.register(this.onES_showUI);
             eventManager.cbOnEquipmentStrengthen.register(this.onEST_showUI);
@@ -116,7 +122,7 @@ export class GameManager extends Component {
         // 绑定游戏退出事件
         this.registerEvent();
 
-        log(DataGetter.inst.getRes(SpriteAtlas,'equipment'))
+        log(DataGetter.inst.getRes(SpriteAtlas, 'equipment'))
 
         SaveGame.get().loadGame();
         BackpackManager.inst.gameStart();
@@ -124,6 +130,8 @@ export class GameManager extends Component {
         RoleManager.inst.gameStart();
         this.mask.active = false;
         RoleManager.inst.moveIn();
+
+        playSound(10001);
     }
 
     public spawnEquipment(): Equipment {

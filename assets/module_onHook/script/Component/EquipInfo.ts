@@ -126,7 +126,7 @@ export class EquipInfo extends Component {
                 this.special1Name.string = '暴击:';
                 this.special1val.string = e.equipmentProperty.crit.toString();
             }
-            if (e.equipmentProperty.hit) {
+            if (e.equipmentProperty.hit <= 0) {
                 this.special2Name.node.active = false;
                 this.special2val.node.active = false;
             }
